@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>極速貸 - 額度評估申請表</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #4B0082 0%, #8A2BE2 100%); }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="gradient-bg text-white p-6 text-center shadow-lg">
+        <h1 class="text-2xl font-bold">極速貸</h1>
+        <p class="text-sm opacity-80">專業額度評估申請表</p>
+    </div>
+
+    <div class="max-w-md mx-auto p-4">
+        <div id="loading" class="text-center py-10">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-700 mx-auto"></div>
+            <p class="mt-4 text-gray-600">載入中，請稍候...</p>
+        </div>
+
+        <form id="loanForm" class="bg-white rounded-xl shadow-md p-6 hidden">
+            <!-- 第一步：基本資料 -->
+            <div id="step1" class="form-section active">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 text-indigo-800">第一步：基本資料</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">姓名</label>
+                        <input type="text" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">手機號碼</label>
+                        <input type="tel" name="phone" placeholder="0912345678" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">LINE ID</label>
+                        <input type="text" name="lineId" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">身分證字號</label>
+                        <input type="text" name="idNumber" placeholder="A123456789" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">生日</label>
+                        <input type="date" name="birthday" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">戶籍地址</label>
+                        <input type="text" name="regAddr" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">居住地址</label>
+                        <input type="text" name="resAddr" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                </div>
+                <button type="button" onclick="nextStep(2)" class="w-full mt-6 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">下一步</button>
+            </div>
+
+            <!-- 第二步：聯絡人資料 -->
+            <div id="step2" class="form-section">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 text-indigo-800">第二步：聯絡人資料</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">聯絡人 1 (姓名/電話/關係)</label>
+                        <input type="text" name="contact1" placeholder="王小明 / 0911222333 / 兄弟" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">聯絡人 2 (姓名/電話/關係)</label>
+                        <input type="text" name="contact2" placeholder="李小華 / 0922333444 / 朋友" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border">
+                    </div>
+                </div>
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" onclick="nextStep(1)" class="w-1/3 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold">上一步</button>
+                    <button type="button" onclick="nextStep(3)" class="w-2/3 bg-indigo-600 text-white py-3 rounded-lg font-semibold">下一步</button>
+                </div>
+            </div>
+
+            <!-- 第三步：證件上傳 -->
+            <div id="step3" class="form-section">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 text-indigo-800">第三步：證件上傳</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">身分證正面照片</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center" id="frontPreview">
+                            <input type="file" accept="image/*" id="idFront" class="hidden" onchange="handleImage(this, 'front')">
+                            <button type="button" onclick="document.getElementById('idFront').click()" class="text-indigo-600 font-medium">+ 點擊上傳正面</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">身分證反面照片</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center" id="backPreview">
+                            <input type="file" accept="image/*" id="idBack" class="hidden" onchange="handleImage(this, 'back')">
+                            <button type="button" onclick="document.getElementById('idBack').click()" class="text-indigo-600 font-medium">+ 點擊上傳反面</button>
+                        </div>
+                    </div>
+                    <div class="flex items-start mt-4">
+                        <input type="checkbox" id="consent" required class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <label for="consent" class="ml-2 text-sm text-gray-600">我同意極速貸蒐集並使用我的個人資料進行額度評估。</label>
+                    </div>
+                </div>
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" onclick="nextStep(2)" class="w-1/3 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold">上一步</button>
+                    <button type="submit" id="submitBtn" class="w-2/3 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">確認送出</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let idFrontBase64 = "";
+        let idBackBase64 = "";
+
+        async function initLIFF() {
+            try {
+                await liff.init({ liffId: '2010163577-4275Ob9E' });
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('loanForm').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('LIFF Initialization failed', err);
+                alert('載入失敗，請重新開啟');
+            }
+        }
+
+        function nextStep(step) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function handleImage(input, type) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result.split(',')[1];
+                    if (type === 'front') {
+                        idFrontBase64 = base64;
+                        document.getElementById('frontPreview').innerHTML = `<p class="text-green-600 font-medium">✅ 正面已選取</p>`;
+                    } else {
+                        idBackBase64 = base64;
+                        document.getElementById('backPreview').innerHTML = `<p class="text-green-600 font-medium">✅ 反面已選取</p>`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('loanForm').onsubmit = async (e) => {
+            e.preventDefault();
+            if (!idFrontBase64 || !idBackBase64) {
+                alert('請上傳身分證正反面照片');
+                return;
+            }
+            if (!document.getElementById('consent').checked) {
+                alert('請勾選同意個資使用');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "提交中...";
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.idFrontBase64 = idFrontBase64;
+            data.idBackBase64 = idBackBase64;
+
+            try {
+                const response = await fetch('/submit_liff_form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Line-User-ID': liff.getContext().userId
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('提交成功！請回到 LINE 聊天室查看訊息。');
+                    liff.closeWindow();
+                } else {
+                    throw new Error('提交失敗');
+                }
+            } catch (err) {
+                alert('提交發生錯誤，請稍後再試');
+                submitBtn.disabled = false;
+                submitBtn.innerText = "確認送出";
+            }
+        };
+
+        initLIFF();
+    </script>
+</body>
+</html>
